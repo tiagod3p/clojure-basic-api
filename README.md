@@ -1,36 +1,24 @@
 # basic-api
 
-FIXME: description
+A Basic Api to learn new things about handle http request/response with Clojure on backend.
 
-## Installation
+## Tools needed to run
 
-Download from http://example.com/FIXME.
+- Open JDK 15
+- Leiningen 
+- Clojure
 
 ## Usage
 
-FIXME: explanation
+In the project folder just open a terminal and type
 
-    $ java -jar basic-api-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+```
+lein run
+```
 
 ## License
 
-Copyright © 2020 FIXME
+Copyright © 2020
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
