@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [ring "1.8.2"]
                  [ring/ring-json "0.5.0"]
-                 [compojure "1.6.2"]]
+                 [compojure "1.6.2"]
+                 [com.novemberain/monger "3.1.0"]]
   :plugins [[lein-cljfmt "0.7.0"]]
   :main ^:skip-aot basic-api.core
   :target-path "target/%s"
