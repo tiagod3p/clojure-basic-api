@@ -14,19 +14,25 @@
 (def conn (:conn connection))
 (def db (:db connection))
 
+(defn remove-_id-from-mongo-map [object]
+  (dissoc object :_id))
 
 (defn insert-product [product]
-    (mc/insert db "products" product))
+  (mc/insert db "products" product))
+
+(defn get-all-products []
+  (mc/find-maps db "products"))
 
 (defn handler-get-all-products [request]
-  (response {:statusCode 200 :body "Products."}))
-
-(defn route-not-found [request]
-  (response {:statusCode 404 :body "Page not found."}))
+  (let [products (get-all-products)]
+    (response {:statusCode 200 :body (map remove-_id-from-mongo-map products)})))
 
 (defn handler-insert-product [request]
   (insert-product (get-in request[:body]))
   (response {:statusCode "200" :body (get-in request [:body])}))
+
+(defn route-not-found [request]
+  (response {:statusCode 404 :body "Page not found."}))
 
 (def products  (wrap-json-response handler-get-all-products))
 (def post-product (wrap-json-response (wrap-json-body handler-insert-product {:keywords? true :bigdecimals? true})))
