@@ -8,38 +8,34 @@
             [monger.collection :as mc])
  (:gen-class))
 
-;(let [uri "mongodb://tiago:KOybPSFH89hdcC6x@githubcluster-shard-00-00.tgupk.mongodb.net:27017,githubcluster-shard-00-01.tgupk.mongodb.net:27017,githubcluster-shard-00-02.tgupk.mongodb.net:27017/clojure_db?ssl=true&replicaSet=atlas-79tl7a-shard-0&authSource=admin&retryWrites=true&w=majority&readPreference=secondary"
-      ;{:keys [conn db]} (mg/connect-via-uri uri)))
-
-(def uri "mongodb://tiago:KOybPSFH89hdcC6x@githubcluster-shard-00-00.tgupk.mongodb.net:27017,githubcluster-shard-00-01.tgupk.mongodb.net:27017,githubcluster-shard-00-02.tgupk.mongodb.net:27017/clojure_db?ssl=true&replicaSet=atlas-79tl7a-shard-0&authSource=admin&retryWrites=true&w=majority&readPreference=secondary")
+(def uri "mongodb://tiago:DF0aYEH4GMoc7nCn@githubcluster-shard-00-00.tgupk.mongodb.net:27017,githubcluster-shard-00-01.tgupk.mongodb.net:27017,githubcluster-shard-00-02.tgupk.mongodb.net:27017/ecommerce-api?ssl=true&replicaSet=atlas-79tl7a-shard-0&authSource=admin&retryWrites=true&w=majority&readPreference=secondary")
 
 (def connection (mg/connect-via-uri uri))
-
 (def conn (:conn connection))
 (def db (:db connection))
 
 
-(defn insert-at-mongo [body]
-    (mc/insert db "test" body))
+(defn insert-product [product]
+    (mc/insert db "products" product))
 
-(defn handler [request]
-  (response {:body {:statusCode "200" :message "Home Page" :connection (str connection)}}))
+(defn handler-get-all-products [request]
+  (response {:statusCode 200 :body "Products."}))
 
 (defn route-not-found [request]
-  (response {:body {:statusCode "404" :message "Page not found"}}))
+  (response {:statusCode 404 :body "Page not found."}))
 
-(defn handler-request-body [request]
-  (insert-at-mongo (get-in request[:body]))
+(defn handler-insert-product [request]
+  (insert-product (get-in request[:body]))
   (response {:statusCode "200" :body (get-in request [:body])}))
 
-(def app  (wrap-json-response handler))
-
-(def post_request (wrap-json-response (wrap-json-body handler-request-body {:keywords? true :bigdecimals? true})))
+(def products  (wrap-json-response handler-get-all-products))
+(def post-product (wrap-json-response (wrap-json-body handler-insert-product {:keywords? true :bigdecimals? true})))
+(def not-found (wrap-json-response route-not-found))
 
 (defroutes index
-  (GET "/test" [] app)
-  (POST "/test" request post_request)
-  (route/not-found (wrap-json-response route-not-found)))
+  (GET "/products" [] products)
+  (POST "/products" request post-product)
+  (route/not-found not-found))
 
 (defn -main
   []
