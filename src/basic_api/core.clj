@@ -1,6 +1,6 @@
 (ns basic-api.core
   (:require [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
+            [ring.middleware.json :refer [wrap-json-response wrap-json-body wrap-json-params]]
             [ring.util.response :refer [response]]
             [compojure.core :refer [GET POST defroutes]]
             [compojure.route :as route]
@@ -23,9 +23,16 @@
 (defn get-all-products []
   (mc/find-maps db "products"))
 
+(defn get-product-by-id [productId]
+  (mc/find-one-as-map db "products" {:productId productId}))
+
 (defn handler-get-all-products [request]
   (let [products (get-all-products)]
     (response {:statusCode 200 :body (map remove-_id-from-mongo-map products)})))
+
+(defn handler-get-product-by-id [request]
+  (let [product (get-product-by-id (get-in request[:params "productId"]))]
+    (response {:statusCode 200 :body (dissoc product :_id)})))
 
 (defn handler-insert-product [request]
   (insert-product (get-in request[:body]))
@@ -34,12 +41,14 @@
 (defn route-not-found [request]
   (response {:statusCode 404 :body "Page not found."}))
 
-(def products  (wrap-json-response handler-get-all-products))
+(def get-products  (wrap-json-response handler-get-all-products))
+(def get-product (wrap-json-response (wrap-json-params handler-get-product-by-id)))
 (def post-product (wrap-json-response (wrap-json-body handler-insert-product {:keywords? true :bigdecimals? true})))
 (def not-found (wrap-json-response route-not-found))
 
 (defroutes index
-  (GET "/products" [] products)
+  (GET "/products" [] get-products)
+  (GET "/products/:productId" request get-product)
   (POST "/products" request post-product)
   (route/not-found not-found))
 
