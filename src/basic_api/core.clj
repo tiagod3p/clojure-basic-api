@@ -24,19 +24,20 @@
   (mc/find-maps db "products"))
 
 (defn get-product-by-id [productId]
-  (mc/find-one-as-map db "products" {:productId productId}))
+  (mc/find-one-as-map db "products" {:productId (read-string productId)}))
 
 (defn handler-get-all-products [request]
   (let [products (get-all-products)]
     (response {:statusCode 200 :body (map remove-_id-from-mongo-map products)})))
 
 (defn handler-get-product-by-id [request]
-  (let [product (get-product-by-id (get-in request[:params "productId"]))]
+  (let [ productId (get-in request[:params :productId])
+         product (get-product-by-id productId)]
     (response {:statusCode 200 :body (dissoc product :_id)})))
 
 (defn handler-insert-product [request]
-  (insert-product (get-in request[:body]))
-  (response {:statusCode "200" :body (get-in request [:body])}))
+  (let [product (insert-product (get-in request[:body]))]
+    (response {:statusCode "200" :body product})))
 
 (defn route-not-found [request]
   (response {:statusCode 404 :body "Page not found."}))
