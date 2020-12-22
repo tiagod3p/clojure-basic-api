@@ -34,18 +34,18 @@
     (response {:statusCode 200 :body (map remove-_id-from-mongo-map products)})))
 
 (defn handler-get-product-by-id [request]
-  (let [ productId (get-in request[:params :productId])
-         product (get-product-by-id productId)]
+  (let [productId (get-in request [:params :productId])
+        product (get-product-by-id productId)]
     (response {:statusCode 200 :body (dissoc product :_id)})))
 
 (defn handler-update-product [request]
-  (let [productId (get-in request[:params :productId])
-        body (get-in request[:body])]
+  (let [productId (get-in request [:params :productId])
+        body (get-in request [:body])]
     (update-product productId body)
     (response {:statusCode 200 :body "Product updated."})))
 
 (defn handler-insert-product [request]
-  (let [product (insert-product (get-in request[:body]))]
+  (let [product (insert-product (get-in request [:body]))]
     (response {:statusCode 200 :body product})))
 
 (defn route-not-found [request]
